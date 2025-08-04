@@ -36,21 +36,25 @@ export type MileStoneData = {
   } | null;
   open_issues: number;
   closed_issues: number;
-  state: 'open' | 'closed';
+  state: "open" | "closed";
   created_at: string;
   updated_at: string;
   due_on: string | null;
   closed_at: string | null;
 };
 
-
-
-
-const MilestoneFilter = () => {
+const MilestoneFilter = ({
+  active,
+  setActive,
+}: {
+  active: string;
+    setActive: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const [milestones, setMilestones] = useState<MileStoneData[]>([]);
+
   useEffect(() => {
     const fetchMilestones = async () => {
-      const { data }:{data:MileStoneData[]} = await octokit.request(
+      const { data }: { data: MileStoneData[] } = await octokit.request(
         "GET /repos/{owner}/{repo}/milestones",
         {
           owner: "facebook",
@@ -58,15 +62,23 @@ const MilestoneFilter = () => {
         }
       );
       setMilestones(data);
-     
     };
     fetchMilestones();
   }, []);
-  console.log(milestones)
+  console.log(milestones);
   // todo - render milestones
-  return <GithubFilter data={milestones} filter={`milestone`} item={(i)=>(
-    <p>{i.title}</p>
-  )}/>;
+  return (
+    <GithubFilter
+      FilterVals={(i)=>
+       <> {i.title}</>
+      }
+      active={active}
+      setActive={setActive}
+      data={milestones}
+      filter={`milestone`}
+      item={(i) => <p>{i.title}</p>}
+    />
+  );
 };
 
 export default MilestoneFilter;

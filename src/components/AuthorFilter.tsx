@@ -25,7 +25,13 @@ type AuthorsData = {
   contributions?: number;
 };
 
-const AuthorFilter = () => {
+const AuthorFilter = ({
+  active,
+  setActive,
+}: {
+  active: string;
+    setActive: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const [authors, setAuthors] = useState<AuthorsData[]>([]);
   useEffect(() => {
     const fetchAuthors = async () => {
@@ -43,14 +49,25 @@ const AuthorFilter = () => {
   console.log(authors);
   // todo - render authors
   return (
-    
     <GithubFilter
+      FilterVals={(i)=>
+       <>{i.login}</> 
+      }
+      active={active}
+      setActive={setActive}
       data={authors}
       filter={`author`}
       item={(i) => (
         <>
-          <div key={i.id} className="flex flex-row p-1 ">
-            <img src={i.avatar_url} className="w-[40px] rounded-4xl min-w-[40px]" />
+          <div
+            key={i.id}
+            className="flex flex-row p-1 hover:bg-gray-300 hover:rounded-lg cursor-pointer"
+          >
+            <input type="checkbox" className="mx-2" />
+            <img
+              src={i.avatar_url}
+              className="w-[40px] rounded-full min-w-[40px]"
+            />
             <p className="text-[15px] ml-2 self-center">{i.login}</p>
           </div>
         </>
