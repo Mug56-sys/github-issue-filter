@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const GithubFilter = <T,>({
   data,
@@ -6,17 +6,35 @@ const GithubFilter = <T,>({
   filter,
   active,
   setActive,
-  FilterVals
+  FilterVals,
 }: {
   data: T[];
   item: (i: T) => React.ReactNode;
   filter: string;
   active: string;
   setActive: React.Dispatch<React.SetStateAction<string>>;
-  FilterVals:(i:T)=>React.ReactNode;
+  FilterVals: (i: T) => React.ReactNode;
 }) => {
+  const FilterRef = useRef<HTMLDivElement>(null);
+
   const [filterData, SetFilterData] = useState(data);
   const [search, SetSearch] = useState<string>("");
+
+  useEffect(() => {
+  if (active !== filter) return;
+
+  const ClickChecker = (e: MouseEvent) => {
+    if (FilterRef.current && !FilterRef.current.contains(e.target as Node)) {
+      setActive("");
+    }
+  };
+
+  document.addEventListener("mousedown", ClickChecker);
+
+  return () => {
+    document.removeEventListener("mousedown", ClickChecker);
+  };
+}, [active, filter, setActive]);
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -27,7 +45,7 @@ const GithubFilter = <T,>({
     }
 
     const searchValues = data?.filter((d) => {
-      console.log(FilterVals(d))
+      console.log(FilterVals(d));
       return JSON.stringify(FilterVals(d))
         .toLowerCase()
         .includes(val.trim().toLowerCase());
@@ -37,7 +55,7 @@ const GithubFilter = <T,>({
     console.log(searchValues);
   };
   return (
-    <div className="flex flex-col col-1 text-center ">
+    <div className="flex flex-col col-1 text-center " ref={FilterRef}>
       <button
         className="px-4 border rounded-lg cursor-pointer"
         onClick={() => {
@@ -67,9 +85,8 @@ const GithubFilter = <T,>({
                 <React.Fragment>{item(d)}</React.Fragment>
               </div>
             );
-            
           })}
-          {filterData.length===0 && (
+          {filterData.length === 0 && (
             <div className="text-gray-500 p-2">No results for {search}</div>
           )}
         </div>

@@ -54,6 +54,7 @@ const MilestoneFilter = ({
 
   useEffect(() => {
     const fetchMilestones = async () => {
+      try{
       const { data }: { data: MileStoneData[] } = await octokit.request(
         "GET /repos/{owner}/{repo}/milestones",
         {
@@ -62,7 +63,10 @@ const MilestoneFilter = ({
         }
       );
       setMilestones(data);
-    };
+    }catch (error) {
+        console.log("Error fetching")
+      }
+    }
     fetchMilestones();
   }, []);
   console.log(milestones);

@@ -23,6 +23,7 @@ const LabelFilter = ({
 
   useEffect(() => {
     const fetchLabels = async () => {
+      try{
       const { data }: { data: LabelData[] } = await octokit.request(
         "GET /repos/{owner}/{repo}/labels",
         {
@@ -31,7 +32,10 @@ const LabelFilter = ({
         }
       );
       setLabels(data);
-    };
+    }catch (error) {
+        console.log("Error fetching")
+      }
+    }
     fetchLabels();
   }, []);
   console.log(labels);

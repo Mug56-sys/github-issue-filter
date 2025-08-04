@@ -30,19 +30,23 @@ const AuthorFilter = ({
   setActive,
 }: {
   active: string;
-    setActive: React.Dispatch<React.SetStateAction<string>>;
+  setActive: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [authors, setAuthors] = useState<AuthorsData[]>([]);
   useEffect(() => {
     const fetchAuthors = async () => {
-      const { data }: { data: AuthorsData[] } = await octokit.request(
-        "GET /repos/{owner}/{repo}/contributors",
-        {
-          owner: "facebook",
-          repo: "react",
-        }
-      );
-      setAuthors(data);
+      try {
+        const { data }: { data: AuthorsData[] } = await octokit.request(
+          "GET /repos/{owner}/{repo}/contributors",
+          {
+            owner: "facebook",
+            repo: "react",
+          }
+        );
+        setAuthors(data);
+      } catch (error) {
+        console.log("Error fetching")
+      }
     };
     fetchAuthors();
   }, []);
@@ -50,9 +54,7 @@ const AuthorFilter = ({
   // todo - render authors
   return (
     <GithubFilter
-      FilterVals={(i)=>
-       <>{i.login}</> 
-      }
+      FilterVals={(i) => <>{i.login}</>}
       active={active}
       setActive={setActive}
       data={authors}
